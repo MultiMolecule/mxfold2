@@ -1,4 +1,5 @@
 import math
+import os
 from itertools import groupby
 
 import torch
@@ -34,15 +35,8 @@ class FastaDataset(Dataset):
 
 
 class BPseqDataset(Dataset):
-    def __init__(self, bpseq_list):
-        self.data = []
-        with open(bpseq_list) as f:
-            for l in f:
-                l = l.rstrip("\n").split()
-                if len(l) == 1:
-                    self.data.append(self.read(l[0]))
-                elif len(l) == 2:
-                    self.data.append(self.read_pdb(l[0], l[1]))
+    def __init__(self, dir):
+        self.data = [self.read(os.path.join(dir, f)) for f in os.listdir(dir) if f.endswith(".bpseq")]
 
     def __len__(self):
         return len(self.data)
