@@ -1,7 +1,9 @@
-from itertools import groupby
-from torch.utils.data import Dataset
-import torch
 import math
+from itertools import groupby
+
+import torch
+from torch.utils.data import Dataset
+
 
 class FastaDataset(Dataset):
     def __init__(self, fasta):
@@ -36,10 +38,10 @@ class BPseqDataset(Dataset):
         self.data = []
         with open(bpseq_list) as f:
             for l in f:
-                l = l.rstrip('\n').split()
-                if len(l)==1:
+                l = l.rstrip("\n").split()
+                if len(l) == 1:
                     self.data.append(self.read(l[0]))
-                elif len(l)==2:
+                elif len(l) == 2:
                     self.data.append(self.read_pdb(l[0], l[1]))
 
     def __len__(self):
@@ -52,15 +54,15 @@ class BPseqDataset(Dataset):
         with open(filename) as f:
             structure_is_known = True
             p = [0]
-            s = ['']
+            s = [""]
             for l in f:
-                if not l.startswith('#'):
-                    l = l.rstrip('\n').split()
+                if not l.startswith("#"):
+                    l = l.rstrip("\n").split()
                     if len(l) == 3:
                         if not structure_is_known:
-                            raise('invalid format: {}'.format(filename))
+                            raise ("invalid format: {}".format(filename))
                         idx, c, pair = l
-                        pos = 'x.<>|'.find(pair)
+                        pos = "x.<>|".find(pair)
                         if pos >= 0:
                             idx, pair = int(idx), -pos
                         else:
@@ -71,17 +73,17 @@ class BPseqDataset(Dataset):
                         structure_is_known = False
                         idx, c, nll_unpaired, nll_paired = l
                         s.append(c)
-                        nll_unpaired = math.nan if nll_unpaired=='-' else float(nll_unpaired)
-                        nll_paired = math.nan if nll_paired=='-' else float(nll_paired)
+                        nll_unpaired = math.nan if nll_unpaired == "-" else float(nll_unpaired)
+                        nll_paired = math.nan if nll_paired == "-" else float(nll_paired)
                         p.append([nll_unpaired, nll_paired])
                     else:
-                        raise('invalid format: {}'.format(filename))
-        
+                        raise ("invalid format: {}".format(filename))
+
         if structure_is_known:
-            seq = ''.join(s)
+            seq = "".join(s)
             return (filename, seq, torch.tensor(p))
         else:
-            seq = ''.join(s)
+            seq = "".join(s)
             p.pop(0)
             return (filename, seq, torch.tensor(p))
 
@@ -105,7 +107,7 @@ class BPseqDataset(Dataset):
         p = []
         with open(label_filename) as f:
             for l in f:
-                l = l.rstrip('\n').split()
+                l = l.rstrip("\n").split()
                 if len(l) == 2 and l[0].isdecimal() and l[1].isdecimal():
                     p.append([int(l[0]), int(l[1])])
 

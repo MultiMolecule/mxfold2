@@ -4,8 +4,8 @@ import sys
 
 with open(sys.argv[1]) as f:
     print(">{}".format(sys.argv[1]))
-    s = ''
+    s = ""
     for l in f:
-        l = l.rstrip().split(' ')
+        l = l.rstrip().split(" ")
         s += l[1]
     print(s)
