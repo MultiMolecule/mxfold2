@@ -281,17 +281,19 @@ class Train:
         subparser.add_argument("input", type=str, help="Training data of the list of BPSEQ-formatted files")
         subparser.add_argument("--test-input", type=str, help="Test data of the list of BPSEQ-formatted files")
         subparser.add_argument("--gpu", type=int, default=-1, help="use GPU with the specified ID (default: -1 = CPU)")
-        subparser.add_argument("--seed", type=int, default=0, metavar="S", help="random seed (default: 0)")
-        subparser.add_argument("--param", type=str, default="param.pth", help="output file name of trained parameters")
+        subparser.add_argument("--seed", type=int, default=1016, metavar="S", help="random seed (default: 1016)")
+        subparser.add_argument(
+            "--param", type=str, default="mxfold2.pth", help="output file name of trained parameters"
+        )
         subparser.add_argument("--init-param", type=str, default="", help="the file name of the initial parameters")
 
         gparser = subparser.add_argument_group("Training environment")
         subparser.add_argument(
-            "--epochs", type=int, default=10, metavar="N", help="number of epochs to train (default: 10)"
+            "--epochs", type=int, default=100, metavar="N", help="number of epochs to train (default: 100)"
         )
-        subparser.add_argument("--log-dir", type=str, default=None, help="Directory for storing logs")
+        subparser.add_argument("--log-dir", type=str, default="experiments", help="Directory for storing logs")
         subparser.add_argument("--resume", type=str, default=None, help="Checkpoint file for resume")
-        subparser.add_argument("--save-config", type=str, default=None, help="save model configurations")
+        subparser.add_argument("--save-config", type=str, default="mxfold2.conf", help="save model configurations")
         subparser.add_argument(
             "--disable-progress-bar", action="store_true", help="disable the progress bar in training"
         )
@@ -303,17 +305,20 @@ class Train:
             "--l1-weight", type=float, default=0.0, help="the weight for L1 regularization (default: 0)"
         )
         gparser.add_argument(
-            "--l2-weight", type=float, default=0.0, help="the weight for L2 regularization (default: 0)"
+            "--l2-weight", type=float, default=0.01, help="the weight for L2 regularization (default: 0.01)"
         )
         gparser.add_argument(
             "--score-loss-weight",
             type=float,
-            default=1.0,
-            help="the weight for score loss for hinge_mix loss (default: 1)",
+            default=0.125,
+            help="the weight for score loss for hinge_mix loss (default: 0.125)",
         )
         gparser.add_argument("--lr", type=float, default=0.001, help="the learning rate for optimizer (default: 0.001)")
         gparser.add_argument(
-            "--loss-func", choices=("hinge", "hinge_mix"), default="hinge", help="loss fuction ('hinge', 'hinge_mix') "
+            "--loss-func",
+            choices=("hinge", "hinge_mix"),
+            default="hinge_mix",
+            help="loss fuction ('hinge', 'hinge_mix') ",
         )
         gparser.add_argument(
             "--loss-pos-paired",
@@ -344,14 +349,14 @@ class Train:
         gparser.add_argument(
             "--model",
             choices=("Turner", "Zuker", "ZukerS", "ZukerL", "ZukerC", "Mix", "MixC"),
-            default="Turner",
+            default="MixC",
             help="Folding model ('Turner', 'Zuker', 'ZukerS', 'ZukerL', 'ZukerC', 'Mix', 'MixC')",
         )
         gparser.add_argument(
             "--max-helix-length", type=int, default=30, help="the maximum length of helices (default: 30)"
         )
         gparser.add_argument(
-            "--embed-size", type=int, default=0, help="the dimention of embedding (default: 0 == onehot)"
+            "--embed-size", type=int, default=64, help="the dimention of embedding (default: 0 == onehot)"
         )
         gparser.add_argument("--num-filters", type=int, action="append", help="the number of CNN filters (default: 96)")
         gparser.add_argument(
@@ -403,10 +408,10 @@ class Train:
             help="the number of the hidden units of full connected layers (default: 32)",
         )
         gparser.add_argument(
-            "--dropout-rate", type=float, default=0.0, help="dropout rate of the CNN and LSTM units (default: 0.0)"
+            "--dropout-rate", type=float, default=0.5, help="dropout rate of the CNN and LSTM units (default: 0.5)"
         )
         gparser.add_argument(
-            "--fc-dropout-rate", type=float, default=0.0, help="dropout rate of the hidden units (default: 0.0)"
+            "--fc-dropout-rate", type=float, default=0.5, help="dropout rate of the hidden units (default: 0.5)"
         )
         gparser.add_argument("--num-att", type=int, default=0, help="the number of the heads of attention (default: 0)")
         gparser.add_argument(
